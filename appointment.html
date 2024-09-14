@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctors List</title>
+    <link rel="stylesheet" href="./css/appointmentPage.css">
+    <script type="module" src="js/firebase.js"></script>
+</head>
+<body>
+    <h1>Available Doctors</h1>
+
+    <div id="doctor-list" class="card-container"></div>
+
+    <script type="module">
+        import { db, collection, getDocs } from './js/firebase.js';
+
+        // Reference the 'doctors' collection
+        const doctorsCollectionRef = collection(db, "doctors");
+
+        // Fetch documents from Firestore
+        const doctorList = document.getElementById('doctor-list');
+
+        const fetchDoctors = async () => {
+            try {
+                const querySnapshot = await getDocs(doctorsCollectionRef);
+                querySnapshot.forEach((doc) => {
+                    const doctorData = doc.data();
+                    
+                    // Create doctor card
+                    const doctorCard = document.createElement('div');
+                    doctorCard.classList.add('card');
+                    doctorCard.innerHTML = `
+    <div class="container">
+        <div class="doctor-list">
+            <div class="doctor">
+                <img alt="${doctorData.profileImage}" height="100" src="https://oaidalleapiprodscus.blob.core.windows.net/private/org-BVbpSZmLndA7MfHIxv2ahIKS/user-IBY8IaMXtVn7IVIdZeyvjx16/img-C1fDWNtLYdcPVvIOwJWzSoL8.png?st=2024-09-14T19%3A36%3A27Z&amp;se=2024-09-14T21%3A36%3A27Z&amp;sp=r&amp;sv=2024-08-04&amp;sr=b&amp;rscd=inline&amp;rsct=image/png&amp;skoid=d505667d-d6c1-4a0a-bac7-5c84a87759f8&amp;sktid=a48cca56-e6da-484e-a814-9c849652bcb3&amp;skt=2024-09-13T23%3A13%3A11Z&amp;ske=2024-09-14T23%3A13%3A11Z&amp;sks=b&amp;skv=2024-08-04&amp;sig=1LDEC4PZZkbZ%2BncKSVQ2R0R6eT4vWswh4tz4b28i2sY%3D" width="100"/>
+                <div class="doctor-info">
+                    <h4>${doctorData.name}</h4>
+                    <p>MBBS MS Orthopaedics</p>
+                    <p>Speciality:${doctorData.specialization}</p>
+                    <p>Contact:${doctorData.contact.email} , ${doctorData.contact.phone}</p>
+                    <p>Experience: ${doctorData.experience}</p>
+                </div>
+                <div class="buttons">
+                    <button>Book An Appointment</button>
+                </div>
+            </div>
+`;
+
+                    doctorList.appendChild(doctorCard);
+                });
+            } catch (error) {
+                console.error("Error fetching doctors: ", error);
+            }
+        };
+
+        // Call the fetchDoctors function
+        fetchDoctors();
+    </script>
+</body>
+</html>
